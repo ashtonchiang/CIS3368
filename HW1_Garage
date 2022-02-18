@@ -1,0 +1,67 @@
+import mysql.connector
+from mysql.connector import Error
+from sql import create_connection
+from sql import execute_query
+from sql import execute_read_query
+
+#connecting to mysql database
+conn = create_connection('cis3368.cz4llpe45bv7.us-east-1.rds.amazonaws.com', 'admin', 'databasepswd', 'cis3368db')
+
+#displaying menu options
+def menu():
+    menu1 = "MENU\na - Add Car\nd - Remove Car\nu - Update Car Details\nr1 - Output All Cars Sorted By Year\nr2 - Output All Cars of a Certain Color\nq - Quit"
+    print(menu1)
+    user = input('Enter Option: ')
+    return user 
+
+#user function to add car
+def add_car(conn):
+    car_make = input('Make: ')
+    car_model = input('Model: ')
+    car_yr = int(input('Year: '))
+    car_color = input('Color: ')
+
+    query = "INSERT INTO garage (make, model, yr, color) VALUES ('%s', '%s', %s, '%s')" % (car_make, car_model, car_yr, car_color)
+    #return execute_query(conn, query)
+
+#user function to remove a car
+def remove_car(conn):
+    ID = input('Enter Car ID to Remove: ')
+    query = "DELETE FROM garage WHERE id = '%s' " % (ID)
+    #return execute_query(conn, query)
+
+#user function to update car
+def update_car(conn):
+    ID = input('Enter Car ID to update: ')
+    new_make = input('Make: ')
+    new_model = input('Model: ')
+    new_year = int(input('Year: '))
+    new_color = input('Color: ')
+    query = "UPDATE garage SET make = '%s', model = '%s', yr = %s, color = '%s' WHERE id=%s" % (new_make,new_model,new_year,new_color,ID)
+    #return execute_query(conn, query)
+
+#Operating the menu
+while True:
+    choice = menu()
+    while choice not in ['a','d','u','r1','r2','q']:
+        print('Invalid choice')
+        choice = menu()
+
+    if choice == 'a':
+        add_car(conn)
+
+    elif choice == 'd':
+        remove_car(conn)
+
+    elif choice == 'u':
+        update_car(conn)
+
+    elif choice == 'r1':
+        print(execute_read_query(conn, "SELECT * FROM garage ORDER BY yr"))
+
+    elif choice == 'r2':
+        print(execute_read_query(conn, "SELECT * FROM garage ORDER BY color"))
+
+    elif choice == 'q':
+        print('Goodbye')
+        break
